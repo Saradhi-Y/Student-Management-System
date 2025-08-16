@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Management System{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'dashboard' %}" class="nav-logo">
+                📚 Student Management System
+            </a>
+            <div class="nav-menu">
+                {% if user.is_authenticated %}
+                    <span class="nav-text">Welcome, {{ user.get_full_name|default:user.username }}!</span>
+                    <a href="{% url 'logout' %}" class="nav-link">🚪 Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link">🔑 Login</a>
+                    <a href="{% url 'register' %}" class="nav-link">👤 Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        {{ message }}
+                        <span class="message-close" onclick="this.parentElement.remove()">×</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Student Management System. All rights reserved.</p>
+    </footer>
+</body>
+</html>

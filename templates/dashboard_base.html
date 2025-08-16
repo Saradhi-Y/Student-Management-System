@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-avatar">👨‍🏫</div>
+                <h3>{{ user.get_full_name|default:user.username }}</h3>
+                <p>Teacher</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard' %}" class="nav-item">
+                    📊 Dashboard
+                </a>
+                <a href="{% url 'my_students' %}" class="nav-item">
+                    👥 My Students
+                </a>
+                <a href="{% url 'add_student' %}" class="nav-item">
+                    ➕ Add Student
+                </a>
+                <a href="{% url 'logout' %}" class="nav-item logout-item">
+                    🚪 Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message message-{{ message.tags }}">
+                            {{ message }}
+                            <span class="message-close" onclick="this.parentElement.remove()">×</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>

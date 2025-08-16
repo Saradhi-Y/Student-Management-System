@@ -1,0 +1,233 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Student Detail{% endblock %}
+
+{% block content %}
+<style>
+/* Student Detail Page Styles */
+h2 {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #3498db;
+  font-weight: 600;
+}
+
+#student-form {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  border: 1px solid #e1e8ed;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  background-color: #ffffff;
+}
+
+.form-group input[readonly],
+.form-group select[disabled],
+.form-group textarea[readonly] {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  border-color: #dee2e6;
+}
+
+.form-group input[disabled],
+.form-group select[disabled],
+.form-group textarea[disabled] {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  border-color: #dee2e6;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-family: inherit;
+}
+
+#save-button {
+  background-color: #27ae60;
+  color: white;
+  border: 2px solid #27ae60;
+}
+
+#save-button:hover {
+  background-color: #219a52;
+  border-color: #219a52;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+button[onclick="enableEdit()"] {
+  background-color: #3498db;
+  color: white;
+  border: 2px solid #3498db;
+}
+
+button[onclick="enableEdit()"]:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+button[name="delete_student"] {
+  background-color: #e74c3c;
+  color: white;
+  border: 2px solid #e74c3c;
+}
+
+button[name="delete_student"]:hover {
+  background-color: #c0392b;
+  border-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+a[href*="my_students"] {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #95a5a6;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  border: 2px solid #95a5a6;
+}
+
+a[href*="my_students"]:hover {
+  background-color: #7f8c8d;
+  border-color: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+}
+
+@media (max-width: 768px) {
+  #student-form {
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  button,
+  a[href*="my_students"] {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    margin-right: 0;
+    text-align: center;
+  }
+}
+</style>
+
+<h2>👤 Student Detail</h2>
+
+<form method="post" enctype="multipart/form-data" id="student-form">
+  {% csrf_token %}
+  
+  {% for field in form %}
+    <div class="form-group">
+      <label>{{ field.label }}</label>
+      {{ field }}
+    </div>
+  {% endfor %}
+
+  <button type="submit" name="update_student" id="save-button" style="display:none;">💾 Save</button>
+</form>
+
+<br>
+
+<button onclick="enableEdit()">✏️ Edit</button>
+
+<form method="post" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit" name="delete_student" onclick="return confirm('Are you sure to delete this student?')">🗑 Delete</button>
+</form>
+
+<a href="{% url 'my_students' %}">← Back</a>
+
+<script>
+  function enableEdit() {
+    const form = document.getElementById("student-form");
+    const inputs = form.querySelectorAll("input, select, textarea");
+    for (let input of inputs) {
+      input.removeAttribute("readonly");
+      input.removeAttribute("disabled");
+    }
+    document.getElementById("save-button").style.display = "inline";
+  }
+
+  window.onload = function() {
+    const form = document.getElementById("student-form");
+    const inputs = form.querySelectorAll("input, select, textarea");
+    for (let input of inputs) {
+      input.setAttribute("readonly", true);
+      input.setAttribute("disabled", true);
+    }
+  }
+</script>
+
+{% endblock %}
